@@ -17,7 +17,7 @@ RUN dpkg --add-architecture i386 && \
     echo "deb https://xpra.org/ focal main" >> /etc/apt/sources.list && \
     wget -q https://xpra.org/gpg.asc -O- | apt-key add - && \
     apt update && \
-    apt install -y xpra
+    apt install -y xpra=4.4.6-r29-1
 
 COPY ./server.js .
 COPY ./package.json .
