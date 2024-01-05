@@ -15,11 +15,11 @@ app.get('/xpra', async (req, res) => {
   const host = req.query.host
   const password = req.query.password
   const random = crypto.randomBytes(20).toString('hex')
-  const command = `XPRA_PASSWORD=${password} xpra screenshot ${random}.jpg ws://${host}`
+  const command = `XPRA_PASSWORD=${password} xpra screenshot ${random}.png ws://${host}`
 
   try {
     await executeCommand(command)
-    const filePath = path.resolve(__dirname, `${random}.jpg`)
+    const filePath = path.resolve(__dirname, `${random}.png`)
     const buffer = await cropImage(filePath)
     await sendBuffer(res, buffer)
     console.log(`Buffer sent ${random}`)
@@ -45,11 +45,11 @@ const cropImage = filePath => {
       const h = image.bitmap.height - CROP_Y
       return image.crop(CROP_X, CROP_Y, w, h)
     })
-    .then(image => image.getBufferAsync(Jimp.AUTO))
+    .then(image => image.getBufferAsync(Jimp.MIME_PNG))
 }
 
 const sendBuffer = (res, buffer) => {
-  res.setHeader('Content-Type', 'image/jpeg')
+  res.setHeader('Content-Type', 'image/png')
   res.send(buffer)
 }
 
