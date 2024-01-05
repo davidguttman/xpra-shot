@@ -22,7 +22,8 @@ app.get('/xpra', async (req, res) => {
     const filePath = path.resolve(__dirname, `${random}.jpg`)
     const buffer = await cropImage(filePath)
     await sendBuffer(res, buffer)
-    console.log(`Buffer sent`)
+    console.log(`Buffer sent ${random}`)
+    fs.unlinkSync(filePath)
   } catch (error) {
     handleError(res, error)
   }
