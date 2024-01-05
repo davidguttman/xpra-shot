@@ -18,7 +18,7 @@ app.get('/xpra', (req, res) => {
   const command = `XPRA_PASSWORD=${password} xpra screenshot ${random}.jpg ws://${host}`
 
   exec(command, (error, stdout, stderr) => {
-    if (error) return console.error(`exec error: ${error}`)
+    if (error) return handleError(res, `exec error: ${error}`)
 
     const filePath = path.resolve(__dirname, `${random}.jpg`)
     Jimp.read(filePath)
@@ -30,16 +30,21 @@ app.get('/xpra', (req, res) => {
       .then(image => image.write(filePath))
       .then(() => {
         res.sendFile(filePath, err => {
-          if (err) return console.error(`sendFile error: ${err}`)
+          if (err) return handleError(res, `sendFile error: ${err}`)
 
           fs.unlink(filePath, err => {
-            if (err) console.error(`unlink error: ${err}`)
+            if (err) handleError(res, `unlink error: ${err}`)
           })
         })
       })
-      .catch(err => console.error(err))
+      .catch(err => handleError(res, err))
   })
 })
+
+const handleError = (res, error) => {
+  console.error(error)
+  res.status(500).send('Server Error')
+}
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
