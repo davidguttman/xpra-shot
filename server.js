@@ -20,9 +20,9 @@ app.get('/xpra', async (req, res) => {
   try {
     await executeCommand(command)
     const filePath = path.resolve(__dirname, `${random}.jpg`)
-    await cropImage(filePath)
-    await sendFile(res, filePath)
-    console.log(`File ${filePath} sent`)
+    const buffer = await cropImage(filePath)
+    await sendBuffer(res, buffer)
+    console.log(`Buffer sent`)
   } catch (error) {
     handleError(res, error)
   }
@@ -44,16 +44,12 @@ const cropImage = filePath => {
       const h = image.bitmap.height - CROP_Y
       return image.crop(CROP_X, CROP_Y, w, h)
     })
-    .then(image => image.write(filePath))
+    .then(image => image.getBufferAsync(Jimp.AUTO))
 }
 
-const sendFile = (res, filePath) => {
-  return new Promise((resolve, reject) => {
-    res.sendFile(filePath, err => {
-      if (err) reject(`sendFile error: ${err}`)
-      resolve()
-    })
-  })
+const sendBuffer = (res, buffer) => {
+  res.setHeader('Content-Type', 'image/jpeg')
+  res.send(buffer)
 }
 
 const handleError = (res, error) => {
