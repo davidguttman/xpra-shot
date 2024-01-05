@@ -1,25 +1,26 @@
+const fs = require('fs')
+const path = require('path')
 const Jimp = require('jimp')
-const express = require('express');
-const app = express();
-const path = require('path');
-const port = process.env.PORT || 3000;
-const { exec } = require('child_process');
-const crypto = require('crypto');
-const fs = require('fs');
+const crypto = require('crypto')
+const express = require('express')
+const { exec } = require('child_process')
+
+const app = express()
+const port = process.env.PORT || 3000
 
 const CROP_X = 5
 const CROP_Y = 31
 
 app.get('/xpra', (req, res) => {
-  const host = req.query.host;
-  const password = req.query.password;
-  const random = crypto.randomBytes(20).toString('hex');
-  const command = `XPRA_PASSWORD=${password} xpra screenshot ${random}.jpg ws://${host}`;
-  
+  const host = req.query.host
+  const password = req.query.password
+  const random = crypto.randomBytes(20).toString('hex')
+  const command = `XPRA_PASSWORD=${password} xpra screenshot ${random}.jpg ws://${host}`
+
   exec(command, (error, stdout, stderr) => {
     if (error) return console.error(`exec error: ${error}`)
-      
-    const filePath = path.resolve(__dirname, `${random}.jpg`);
+
+    const filePath = path.resolve(__dirname, `${random}.jpg`)
     Jimp.read(filePath)
       .then(image => {
         const w = image.bitmap.width - CROP_X
@@ -28,19 +29,18 @@ app.get('/xpra', (req, res) => {
       })
       .then(image => image.write(filePath))
       .then(() => {
-        res.sendFile(filePath, (err) => {
-          if (err) return console.error(`sendFile error: ${err}`);
-          
-          fs.unlink(filePath, (err) => {
-            if (err) console.error(`unlink error: ${err}`);
-          });
-        });
+        res.sendFile(filePath, err => {
+          if (err) return console.error(`sendFile error: ${err}`)
+
+          fs.unlink(filePath, err => {
+            if (err) console.error(`unlink error: ${err}`)
+          })
+        })
       })
       .catch(err => console.error(err))
   })
-});
+})
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-
+  console.log(`Server is running on port ${port}`)
+})
