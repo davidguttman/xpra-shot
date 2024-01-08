@@ -9,7 +9,7 @@ const app = express()
 const port = process.env.PORT || 3000
 
 const CROP_X = 5
-const CROP_Y = 31
+const CROP_Y = 32
 
 app.get('/xpra', async (req, res) => {
   const host = req.query.host
