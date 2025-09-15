@@ -58,6 +58,10 @@ const handleError = (res, error) => {
   res.status(500).send('Server Error')
 }
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK')
+})
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`)
 })
