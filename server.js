@@ -15,7 +15,7 @@ app.get('/xpra', async (req, res) => {
   const host = req.query.host
   const password = req.query.password
   const random = crypto.randomBytes(20).toString('hex')
-  const command = `XPRA_PASSWORD=${password} xpra screenshot ${random}.png ws://${host}`
+  const command = `XPRA_PASSWORD=${password} xpra screenshot ${random}.png wss://${host}`
 
   try {
     await executeCommand(command)
